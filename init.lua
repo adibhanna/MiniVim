@@ -94,9 +94,11 @@ require("lazy").setup({
         },
         config = function()
             local lsp = require('lsp-zero').preset("recommended")
+
             lsp.ensure_installed({
-                'gopls', 'rust_analyzer', 'tsserver'
+                'gopls', 'rust_analyzer', 'tsserver', 'lua_ls'
             })
+
             lsp.on_attach(function(client, bufnr)
                 local opts = { buffer = bufnr, remap = false }
                 vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
@@ -104,7 +106,7 @@ require("lazy").setup({
                 vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
                 vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
                 vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-                vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+                vim.keymap.set('n', 'gr', '<cmd>Telescope lsp_references<cr>', opts)
                 vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
                 vim.keymap.set('n', 'lr', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
                 vim.keymap.set({ 'n', 'x' }, 'lf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
@@ -114,6 +116,7 @@ require("lazy").setup({
                 vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
                 vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
             end)
+
             lsp.set_preferences({
                 suggest_lsp_servers = false,
                 sign_icons = {
@@ -123,7 +126,24 @@ require("lazy").setup({
                     info = 'I'
                 }
             })
+
+            require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
+
             lsp.setup()
+
+            local cmp = require('cmp')
+            local cmp_action = require('lsp-zero').cmp_action()
+
+            cmp.setup({
+                window = {
+                    completion = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered(),
+                },
+                mapping = {
+                    ['<Tab>'] = cmp_action.luasnip_supertab(),
+                    ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
+                }
+            })
         end
     },
 
@@ -266,6 +286,40 @@ require("lazy").setup({
                         },
                     },
                 },
+                live_grep = {
+                    --@usage don't include the filename in the search results
+                    only_sort_text = true,
+                    previewer = true,
+                    layout_config = {
+                        horizontal = {
+                            width = 0.9,
+                            height = 0.75,
+                            preview_width = 0.6,
+                        },
+                    },
+                },
+                grep_string = {
+                    --@usage don't include the filename in the search results
+                    only_sort_text = true,
+                    previewer = true,
+                    layout_config = {
+                        horizontal = {
+                            width = 0.9,
+                            height = 0.75,
+                            preview_width = 0.6,
+                        },
+                    },
+                },
+                lsp_references = {
+                    show_line = false,
+                    layout_config = {
+                        horizontal = {
+                            width = 0.9,
+                            height = 0.75,
+                            preview_width = 0.6,
+                        },
+                    },
+                },
             },
         },
     },
@@ -378,8 +432,8 @@ require("lazy").setup({
     },
 
     -- comments
-    { 
-        'numToStr/Comment.nvim', 
+    {
+        'numToStr/Comment.nvim',
         opts = {},
         config = function()
             require('Comment').setup()
