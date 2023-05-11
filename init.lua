@@ -181,13 +181,11 @@ require("lazy").setup({
         keys = {
             { "<leader>st",       "<cmd>Telescope live_grep<cr>",                 desc = "Live Grep" },
             { "<leader>:",        "<cmd>Telescope command_history<cr>",           desc = "Command History" },
-            -- find
             { "<leader>fb",       "<cmd>Telescope buffers<cr>",                   desc = "Buffers" },
             { "<leader><leader>", "<cmd>Telescope buffers<cr>",                   desc = "Buffers" },
             { "<leader>ff",       "<cmd>Telescope find_files<cr>",                desc = "Find Files" },
             { "<C-f>",            "<cmd>Telescope find_files<cr>",                desc = "Find Files" },
             { "<C-p>",            "<cmd>Telescope git_files<cr>",                 desc = "Git Files" },
-            -- search
             { "<leader>sa",       "<cmd>Telescope autocommands<cr>",              desc = "Auto Commands" },
             { "<leader>sb",       "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Buffer" },
             { "<leader>sc",       "<cmd>Telescope command_history<cr>",           desc = "Command History" },
@@ -380,7 +378,13 @@ require("lazy").setup({
     },
 
     -- comments
-    { 'numToStr/Comment.nvim', opts = {} },
+    { 
+        'numToStr/Comment.nvim', 
+        opts = {},
+        config = function()
+            require('Comment').setup()
+        end
+    },
 })
 
 ----------------
