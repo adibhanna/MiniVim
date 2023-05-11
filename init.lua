@@ -96,7 +96,7 @@ require("lazy").setup({
             local lsp = require('lsp-zero').preset("recommended")
 
             lsp.ensure_installed({
-                'gopls', 'rust_analyzer', 'tsserver', 'lua_ls'
+                'rust_analyzer', 'tsserver', 'lua_ls', 'gopls'
             })
 
             lsp.on_attach(function(client, bufnr)
@@ -109,12 +109,20 @@ require("lazy").setup({
                 vim.keymap.set('n', 'gr', '<cmd>Telescope lsp_references<cr>', opts)
                 vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
                 vim.keymap.set('n', 'lr', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-                vim.keymap.set({ 'n', 'x' }, 'lf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
                 vim.keymap.set('n', 'la', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
 
+                vim.keymap.set('n', 'lw', '<cmd>Telescope diagnostics<cr>', opts)
                 vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
                 vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
                 vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
+
+
+                -- check file type, if Go then use GoFmt else the default
+                if vim.bo.filetype == 'go' then
+                    vim.keymap.set({ 'n', 'x' }, 'lf', '<cmd>GoFmt<cr>', opts)
+                else
+                    vim.keymap.set({ 'n', 'x' }, 'lf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+                end
             end)
 
             lsp.set_preferences({
@@ -130,6 +138,10 @@ require("lazy").setup({
             require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
 
             lsp.setup()
+
+            vim.diagnostic.config({
+                virtual_text = true
+            })
 
             local cmp = require('cmp')
             local cmp_action = require('lsp-zero').cmp_action()
@@ -182,20 +194,32 @@ require("lazy").setup({
         },
     },
 
-    -- Vim-Go
+    -- Go
     {
-        "fatih/vim-go",
+        "ray-x/go.nvim",
+        dependencies = { -- optional packages
+            -- "ray-x/guihua.lua",
+        },
+        config = function()
+            require("go").setup()
+        end,
+        event = { "CmdlineEnter" },
+        ft = { "go", 'gomod' },
+        build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
     },
+
 
     -- Telescope
     {
         "nvim-telescope/telescope.nvim",
         dependencies = {
             { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+            'nvim-telescope/telescope-ui-select.nvim',
             "nvim-lua/plenary.nvim",
             build = "make",
             config = function()
                 require("telescope").load_extension("fzf")
+                require("telescope").load_extension("ui-select")
             end,
         },
         keys = {
@@ -221,107 +245,133 @@ require("lazy").setup({
             { "<leader>sR",       "<cmd>Telescope resume<cr>",                    desc = "Resume" },
             { "<leader>sw",       "<cmd>Telescope grep_string<cr>",               desc = "Grep String" },
         },
-        opts = {
-            defaults = {
-                file_ignore_patterns = { 'node_modules', 'package-lock.json' },
-                initial_mode         = 'insert',
-                select_strategy      = 'reset',
-                sorting_strategy     = 'ascending',
-                layout_config        = {
-                    width = 0.75,
-                    height = 0.75,
-                    prompt_position = "top",
-                    preview_cutoff = 120,
-                },
-            },
-            pickers = {
-                find_files = {
-                    hidden           = true,
-                    previewer        = false,
-                    initial_mode     = 'insert',
-                    select_strategy  = 'reset',
-                    sorting_strategy = 'ascending',
-                    layout_strategy  = 'horizontal',
-                    layout_config    = {
+        opts = function()
+            local telescope = require('telescope')
+            telescope.setup({
+                defaults = {
+                    file_ignore_patterns = { 'node_modules', 'package-lock.json' },
+                    initial_mode         = 'insert',
+                    select_strategy      = 'reset',
+                    sorting_strategy     = 'ascending',
+                    layout_config        = {
+                        width = 0.75,
+                        height = 0.75,
                         prompt_position = "top",
                         preview_cutoff = 120,
-                        horizontal = {
-                            width = 0.5,
-                            height = 0.4,
-                            preview_width = 0.6,
+                    },
+                },
+                pickers = {
+                    find_files = {
+                        hidden           = true,
+                        previewer        = false,
+                        initial_mode     = 'insert',
+                        select_strategy  = 'reset',
+                        sorting_strategy = 'ascending',
+                        layout_strategy  = 'horizontal',
+                        layout_config    = {
+                            prompt_position = "top",
+                            preview_cutoff = 120,
+                            horizontal = {
+                                width = 0.5,
+                                height = 0.4,
+                                preview_width = 0.6,
+                            },
+                        },
+                    },
+                    git_files = {
+                        hidden           = true,
+                        previewer        = false,
+                        initial_mode     = 'insert',
+                        select_strategy  = 'reset',
+                        sorting_strategy = 'ascending',
+                        layout_strategy  = 'horizontal',
+                        layout_config    = {
+                            prompt_position = "top",
+                            preview_cutoff = 120,
+                            horizontal = {
+                                width = 0.5,
+                                height = 0.4,
+                                preview_width = 0.6,
+                            },
+                        },
+                    },
+                    buffers = {
+                        hidden           = true,
+                        previewer        = false,
+                        initial_mode     = 'insert',
+                        select_strategy  = 'reset',
+                        sorting_strategy = 'ascending',
+                        layout_strategy  = 'horizontal',
+                        layout_config    = {
+                            prompt_position = "top",
+                            preview_cutoff = 120,
+                            horizontal = {
+                                width = 0.5,
+                                height = 0.4,
+                                preview_width = 0.6,
+                            },
+                        },
+                    },
+                    live_grep = {
+                        --@usage don't include the filename in the search results
+                        only_sort_text = true,
+                        previewer = true,
+                        layout_config = {
+                            horizontal = {
+                                width = 0.9,
+                                height = 0.75,
+                                preview_width = 0.6,
+                            },
+                        },
+                    },
+                    grep_string = {
+                        --@usage don't include the filename in the search results
+                        only_sort_text = true,
+                        previewer = true,
+                        layout_config = {
+                            horizontal = {
+                                width = 0.9,
+                                height = 0.75,
+                                preview_width = 0.6,
+                            },
+                        },
+                    },
+                    lsp_references = {
+                        show_line = false,
+                        layout_config = {
+                            horizontal = {
+                                width = 0.9,
+                                height = 0.75,
+                                preview_width = 0.6,
+                            },
                         },
                     },
                 },
-                git_files = {
-                    hidden           = true,
-                    previewer        = false,
-                    initial_mode     = 'insert',
-                    select_strategy  = 'reset',
-                    sorting_strategy = 'ascending',
-                    layout_strategy  = 'horizontal',
-                    layout_config    = {
-                        prompt_position = "top",
-                        preview_cutoff = 120,
-                        horizontal = {
-                            width = 0.5,
-                            height = 0.4,
-                            preview_width = 0.6,
-                        },
+                extensions = {
+                    fzf = {
+                        fuzzy = true,                   -- false will only do exact matching
+                        override_generic_sorter = true, -- override the generic sorter
+                        override_file_sorter = true,    -- override the file sorter
+                        case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
                     },
-                },
-                buffers = {
-                    hidden           = true,
-                    previewer        = false,
-                    initial_mode     = 'insert',
-                    select_strategy  = 'reset',
-                    sorting_strategy = 'ascending',
-                    layout_strategy  = 'horizontal',
-                    layout_config    = {
-                        prompt_position = "top",
-                        preview_cutoff = 120,
-                        horizontal = {
-                            width = 0.5,
-                            height = 0.4,
-                            preview_width = 0.6,
-                        },
+                    ["ui-select"] = {
+                        require("telescope.themes").get_dropdown({
+                            previewer        = false,
+                            initial_mode     = "normal",
+                            sorting_strategy = 'ascending',
+                            layout_strategy  = 'horizontal',
+                            layout_config    = {
+                                horizontal = {
+                                    width = 0.5,
+                                    height = 0.4,
+                                    preview_width = 0.6,
+                                },
+                            },
+                        })
                     },
-                },
-                live_grep = {
-                    --@usage don't include the filename in the search results
-                    only_sort_text = true,
-                    previewer = true,
-                    layout_config = {
-                        horizontal = {
-                            width = 0.9,
-                            height = 0.75,
-                            preview_width = 0.6,
-                        },
-                    },
-                },
-                grep_string = {
-                    --@usage don't include the filename in the search results
-                    only_sort_text = true,
-                    previewer = true,
-                    layout_config = {
-                        horizontal = {
-                            width = 0.9,
-                            height = 0.75,
-                            preview_width = 0.6,
-                        },
-                    },
-                },
-                lsp_references = {
-                    show_line = false,
-                    layout_config = {
-                        horizontal = {
-                            width = 0.9,
-                            height = 0.75,
-                            preview_width = 0.6,
-                        },
-                    },
-                },
-            },
-        },
+                }
+            })
+        end
     },
 
     -- autopairs
@@ -492,7 +542,6 @@ for k, v in pairs(options) do
     vim.opt[k] = v
 end
 
-
 -- Keymaps --
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 
@@ -618,3 +667,23 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', '<leader>v', "<cmd>vsplit | lua vim.lsp.buf.definition()<CR>", opts)
     end,
 })
+
+-- -- Run gofmt on save
+-- local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = "*.go",
+--   callback = function()
+--    require('go.format').gofmt()
+--   end,
+--   group = format_sync_grp,
+-- })
+
+-- -- Run gofmt + goimport on save
+-- local format_sync_grp = vim.api.nvim_create_augroup("GoImport", {})
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = "*.go",
+--   callback = function()
+--    require('go.format').goimport()
+--   end,
+--   group = format_sync_grp,
+-- })
