@@ -1,3 +1,6 @@
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -176,7 +179,7 @@ require("lazy").setup({
             end,
         },
         keys = {
-            { "<leader>st",       "<cmd>Telescope live_grep<cr>",                 desc = "Grepd" },
+            { "<leader>st",       "<cmd>Telescope live_grep<cr>",                 desc = "Live Grep" },
             { "<leader>:",        "<cmd>Telescope command_history<cr>",           desc = "Command History" },
             -- find
             { "<leader>fb",       "<cmd>Telescope buffers<cr>",                   desc = "Buffers" },
@@ -284,7 +287,6 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
         version = false, -- last release is way too old and doesn't work on Windows
         build = ":TSUpdate",
-        lazy = false,
         event = { "BufReadPost", "BufNewFile" },
         dependencies = {
             "nvim-treesitter/nvim-treesitter-textobjects",
@@ -363,12 +365,23 @@ require("lazy").setup({
                             ["]p"] = { query = "@parameter.inner", desc = "Next parameter" },
                         },
                     },
+                    swap = {
+                        enable = true,
+                        swap_next = {
+                            ['<leader>a'] = '@parameter.inner',
+                        },
+                        swap_previous = {
+                            ['<leader>A'] = '@parameter.inner',
+                        },
+                    },
                 },
             }
         end
     },
-})
 
+    -- comments
+    { 'numToStr/Comment.nvim', opts = {} },
+})
 
 ----------------
 --- SETTINGS ---
@@ -423,7 +436,6 @@ end
 
 
 -- Keymaps --
-vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 
 -- Fast saving
@@ -472,20 +484,18 @@ vim.keymap.set('n', '<leader>c', ":bd<cr>")
 
 
 -- autocommands
-local api = vim.api
-
 -- don't auto comment new line
-api.nvim_create_autocmd("BufEnter", { command = [[set formatoptions-=cro]] })
+vim.api.nvim_create_autocmd("BufEnter", { command = [[set formatoptions-=cro]] })
 
 --- Remove all trailing whitespace on save
-local TrimWhiteSpaceGrp = api.nvim_create_augroup("TrimWhiteSpaceGrp", { clear = true })
-api.nvim_create_autocmd("BufWritePre", {
+local TrimWhiteSpaceGrp = vim.api.nvim_create_augroup("TrimWhiteSpaceGrp", { clear = true })
+vim.api.nvim_create_autocmd("BufWritePre", {
     command = [[:%s/\s\+$//e]],
     group = TrimWhiteSpaceGrp,
 })
 
 -- wrap words "softly" (no carriage return) in mail buffer
-api.nvim_create_autocmd("Filetype", {
+vim.api.nvim_create_autocmd("Filetype", {
     pattern = "mail",
     callback = function()
         vim.opt.textwidth = 0
@@ -498,14 +508,14 @@ api.nvim_create_autocmd("Filetype", {
 })
 
 -- Highlight on yank
-api.nvim_create_autocmd("TextYankPost", {
+vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function()
         vim.highlight.on_yank()
     end,
 })
 
 -- go to last loc when opening a buffer
-api.nvim_create_autocmd("BufReadPost", {
+vim.api.nvim_create_autocmd("BufReadPost", {
     callback = function()
         local mark = vim.api.nvim_buf_get_mark(0, '"')
         local lcount = vim.api.nvim_buf_line_count(0)
@@ -515,22 +525,22 @@ api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
-api.nvim_create_autocmd("FileType", { pattern = "man", command = [[nnoremap <buffer><silent> q :quit<CR>]] })
+vim.api.nvim_create_autocmd("FileType", { pattern = "man", command = [[nnoremap <buffer><silent> q :quit<CR>]] })
 
 -- show cursor line only in active window
-local cursorGrp = api.nvim_create_augroup("CursorLine", { clear = true })
-api.nvim_create_autocmd({ "InsertLeave", "WinEnter" }, {
+local cursorGrp = vim.api.nvim_create_augroup("CursorLine", { clear = true })
+vim.api.nvim_create_autocmd({ "InsertLeave", "WinEnter" }, {
     pattern = "*",
     command = "set cursorline",
     group = cursorGrp,
 })
-api.nvim_create_autocmd(
+vim.api.nvim_create_autocmd(
     { "InsertEnter", "WinLeave" },
     { pattern = "*", command = "set nocursorline", group = cursorGrp }
 )
 
 -- Enable spell checking for certain file types
-api.nvim_create_autocmd(
+vim.api.nvim_create_autocmd(
     { "BufRead", "BufNewFile" },
     -- { pattern = { "*.txt", "*.md", "*.tex" }, command = [[setlocal spell<cr> setlocal spelllang=en,de<cr>]] }
     {
