@@ -8,7 +8,7 @@ Only what you need to code.
 - gitsigns
 - lsp-zero
 - trouble
-- vim-go
+- ray-x/go
 - telescope
 - autopairs
 - treesitter
