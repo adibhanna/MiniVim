@@ -41,6 +41,16 @@ require("lazy").setup({
 		"kdheepak/lazygit.nvim"
 	},
 
+	-- lualine
+	{
+		'nvim-lualine/lualine.nvim',
+		event = "VeryLazy",
+		dependencies = { 'nvim-tree/nvim-web-devicons' },
+		config = function ()
+			require("lualine").setup()
+		end
+	},
+
 	-- LSP ZERO
 	{
 		"VonHeikemen/lsp-zero.nvim",
@@ -126,12 +136,12 @@ require("lazy").setup({
 
 				sources = {
 					-- Copilot Source
-					{ name = "copilot", group_index = 2 },
+					{ name = "copilot",  group_index = 2 },
 					-- Other Sources
 					{ name = "nvim_lsp", group_index = 2 },
-					{ name = "path", group_index = 2 },
-					{ name = "luasnip", group_index = 2 },
-				  },
+					{ name = "path",     group_index = 2 },
+					{ name = "luasnip",  group_index = 2 },
+				},
 			})
 		end,
 	},
@@ -507,50 +517,52 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Copilot
 	{
-        "zbirenbaum/copilot.lua",
-        enabled = true,
-        cmd = "Copilot",
-        event = "InsertEnter",
-        config = function()
-            require("copilot").setup({
-                panel = {
-                    enabled = false,
-                    auto_refresh = true,
-                    keymap = {
-                        jump_next = "<c-j>",
-                        jump_prev = "<c-k>",
-                        accept = "<c-a>",
-                        refresh = "r",
-                        open = "<M-CR>",
-                    },
-                    layout = {
-                        position = "bottom", -- | top | left | right
-                        ratio = 0.4,
-                    },
-                },
-                suggestion = {
-                    enabled = false,
-                    auto_trigger = true,
-                    debounce = 75,
-                    keymap = {
-                        accept = "<c-a>",
-                        accept_word = false,
-                        accept_line = false,
-                        next = "<c-j>",
-                        prev = "<c-k>",
-                        dismiss = "<C-e>",
-                    },
-                },
-            })
-        end
-    },
+		"zbirenbaum/copilot.lua",
+		enabled = true,
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({
+				panel = {
+					enabled = false,
+					auto_refresh = true,
+					keymap = {
+						jump_next = "<c-j>",
+						jump_prev = "<c-k>",
+						accept = "<c-a>",
+						refresh = "r",
+						open = "<M-CR>",
+					},
+					layout = {
+						position = "bottom", -- | top | left | right
+						ratio = 0.4,
+					},
+				},
+				suggestion = {
+					enabled = false,
+					auto_trigger = true,
+					debounce = 75,
+					keymap = {
+						accept = "<c-a>",
+						accept_word = false,
+						accept_line = false,
+						next = "<c-j>",
+						prev = "<c-k>",
+						dismiss = "<C-e>",
+					},
+				},
+			})
+		end
+	},
+	-- copilot cmp
 	{
 		"zbirenbaum/copilot-cmp",
-		config = function ()
-		  require("copilot_cmp").setup()
+		config = function()
+			require("copilot_cmp").setup()
 		end
-	  }
+	}
 })
 
 ----------------
