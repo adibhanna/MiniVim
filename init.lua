@@ -14,9 +14,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-----------------
---- plugins ---
-----------------
+
 require("lazy").setup({
 
 	-- colorscheme
@@ -46,7 +44,7 @@ require("lazy").setup({
 		'nvim-lualine/lualine.nvim',
 		event = "VeryLazy",
 		dependencies = { 'nvim-tree/nvim-web-devicons' },
-		config = function ()
+		config = function()
 			require("lualine").setup()
 		end
 	},
@@ -184,9 +182,6 @@ require("lazy").setup({
 	-- Go
 	{
 		"ray-x/go.nvim",
-		dependencies = { -- optional packages
-			-- "ray-x/guihua.lua",
-		},
 		config = function()
 			require("go").setup()
 		end,
@@ -250,96 +245,12 @@ require("lazy").setup({
 			pickers = {
 				find_files = {
 					previewer = false,
-					previewer = false,
-					initial_mode = "insert",
-					select_strategy = "reset",
-					sorting_strategy = "ascending",
-					layout_strategy = "horizontal",
-					layout_config = {
-						prompt_position = "top",
-						preview_cutoff = 120,
-						horizontal = {
-							width = 0.5,
-							height = 0.4,
-							preview_width = 0.6,
-						},
-					},
-					previewer = false,
-					initial_mode = "insert",
-					select_strategy = "reset",
-					sorting_strategy = "ascending",
-					layout_strategy = "horizontal",
-					layout_config = {
-						prompt_position = "top",
-						preview_cutoff = 120,
-						horizontal = {
-							width = 0.5,
-							height = 0.4,
-							preview_width = 0.6,
-						},
-					},
 				},
 				git_files = {
 					previewer = false,
-					previewer = false,
-					initial_mode = "insert",
-					select_strategy = "reset",
-					sorting_strategy = "ascending",
-					layout_strategy = "horizontal",
-					layout_config = {
-						prompt_position = "top",
-						preview_cutoff = 120,
-						horizontal = {
-							width = 0.5,
-							height = 0.4,
-							preview_width = 0.6,
-						},
-					},
-					previewer = false,
-					initial_mode = "insert",
-					select_strategy = "reset",
-					sorting_strategy = "ascending",
-					layout_strategy = "horizontal",
-					layout_config = {
-						prompt_position = "top",
-						preview_cutoff = 120,
-						horizontal = {
-							width = 0.5,
-							height = 0.4,
-							preview_width = 0.6,
-						},
-					},
 				},
 				buffers = {
 					previewer = false,
-					previewer = false,
-					initial_mode = "insert",
-					select_strategy = "reset",
-					sorting_strategy = "ascending",
-					layout_strategy = "horizontal",
-					layout_config = {
-						prompt_position = "top",
-						preview_cutoff = 120,
-						horizontal = {
-							width = 0.5,
-							height = 0.4,
-							preview_width = 0.6,
-						},
-					},
-					previewer = false,
-					initial_mode = "insert",
-					select_strategy = "reset",
-					sorting_strategy = "ascending",
-					layout_strategy = "horizontal",
-					layout_config = {
-						prompt_position = "top",
-						preview_cutoff = 120,
-						horizontal = {
-							width = 0.5,
-							height = 0.4,
-							preview_width = 0.6,
-						},
-					},
 				},
 				live_grep = {
 					only_sort_text = true,
@@ -609,7 +520,7 @@ local options = {
 	ruler = false,                        -- Don't show the ruler
 	guifont = "monospace:h17",            -- the font used in graphical neovim applications
 	title = true,                         -- set the title of window to the value of the titlestring
-	modifiable = true,                    -- allow a buffer to be modified
+	-- modifiable = false,                   -- allow a buffer to be modified
 }
 
 for k, v in pairs(options) do
