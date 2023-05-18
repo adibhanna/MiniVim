@@ -30,49 +30,15 @@ require("lazy").setup({
 		end,
 	},
 
-	{
-		"adibhanna/gruvdark.nvim",
-		config = function()
-			-- vim.cmd.colorscheme("gruvdark")
-		end,
-	},
-
 	-- git signs
 	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		keys = {},
-		opts = {
-			signs = {
-				add = { text = "▎" },
-				change = { text = "▎" },
-				delete = { text = "" },
-				topdelete = { text = "" },
-				changedelete = { text = "▎" },
-				untracked = { text = "▎" },
-			},
-			on_attach = function(buffer)
-				local gs = package.loaded.gitsigns
+	},
 
-				local function map(mode, l, r, desc)
-					vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
-				end
-
-				-- stylua: ignore start
-				map("n", "]h", gs.next_hunk, "Next Hunk")
-				map("n", "[h", gs.prev_hunk, "Prev Hunk")
-				map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-				map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-				map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-				map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-				map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
-				map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
-				map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
-				map("n", "<leader>ghd", gs.diffthis, "Diff This")
-				map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
-				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
-			end,
-		},
+	-- lazygit
+	{
+		"kdheepak/lazygit.nvim"
 	},
 
 	-- LSP ZERO
@@ -145,10 +111,6 @@ require("lazy").setup({
 
 			lsp.setup()
 
-			vim.diagnostic.config({
-				virtual_text = true,
-			})
-
 			local cmp = require("cmp")
 			local cmp_action = require("lsp-zero").cmp_action()
 
@@ -161,6 +123,15 @@ require("lazy").setup({
 					["<Tab>"] = cmp_action.luasnip_supertab(),
 					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
 				},
+
+				sources = {
+					-- Copilot Source
+					{ name = "copilot", group_index = 2 },
+					-- Other Sources
+					{ name = "nvim_lsp", group_index = 2 },
+					{ name = "path", group_index = 2 },
+					{ name = "luasnip", group_index = 2 },
+				  },
 			})
 		end,
 	},
@@ -250,133 +221,174 @@ require("lazy").setup({
 			{ "<leader>sR",       "<cmd>Telescope resume<cr>",                    desc = "Resume" },
 			{ "<leader>sw",       "<cmd>Telescope grep_string<cr>",               desc = "Grep String" },
 		},
-		opts = function()
-			local telescope = require("telescope")
-			telescope.setup({
-				defaults = {
-					file_ignore_patterns = { "node_modules", "package-lock.json" },
+		opts = {
+			defaults = {
+				previewer = false,
+				hidden = true,
+				file_ignore_patterns = { "node_modules", "package-lock.json" },
+				initial_mode = "insert",
+				select_strategy = "reset",
+				sorting_strategy = "ascending",
+				layout_strategy = "horizontal",
+				layout_config = {
+					width = 0.5,
+					height = 0.4,
+					prompt_position = "top",
+					preview_cutoff = 120,
+				},
+			},
+			pickers = {
+				find_files = {
+					previewer = false,
+					previewer = false,
 					initial_mode = "insert",
 					select_strategy = "reset",
 					sorting_strategy = "ascending",
+					layout_strategy = "horizontal",
 					layout_config = {
-						width = 0.75,
-						height = 0.75,
 						prompt_position = "top",
 						preview_cutoff = 120,
+						horizontal = {
+							width = 0.5,
+							height = 0.4,
+							preview_width = 0.6,
+						},
+					},
+					previewer = false,
+					initial_mode = "insert",
+					select_strategy = "reset",
+					sorting_strategy = "ascending",
+					layout_strategy = "horizontal",
+					layout_config = {
+						prompt_position = "top",
+						preview_cutoff = 120,
+						horizontal = {
+							width = 0.5,
+							height = 0.4,
+							preview_width = 0.6,
+						},
 					},
 				},
-				pickers = {
-					find_files = {
-						hidden = true,
+				git_files = {
+					previewer = false,
+					previewer = false,
+					initial_mode = "insert",
+					select_strategy = "reset",
+					sorting_strategy = "ascending",
+					layout_strategy = "horizontal",
+					layout_config = {
+						prompt_position = "top",
+						preview_cutoff = 120,
+						horizontal = {
+							width = 0.5,
+							height = 0.4,
+							preview_width = 0.6,
+						},
+					},
+					previewer = false,
+					initial_mode = "insert",
+					select_strategy = "reset",
+					sorting_strategy = "ascending",
+					layout_strategy = "horizontal",
+					layout_config = {
+						prompt_position = "top",
+						preview_cutoff = 120,
+						horizontal = {
+							width = 0.5,
+							height = 0.4,
+							preview_width = 0.6,
+						},
+					},
+				},
+				buffers = {
+					previewer = false,
+					previewer = false,
+					initial_mode = "insert",
+					select_strategy = "reset",
+					sorting_strategy = "ascending",
+					layout_strategy = "horizontal",
+					layout_config = {
+						prompt_position = "top",
+						preview_cutoff = 120,
+						horizontal = {
+							width = 0.5,
+							height = 0.4,
+							preview_width = 0.6,
+						},
+					},
+					previewer = false,
+					initial_mode = "insert",
+					select_strategy = "reset",
+					sorting_strategy = "ascending",
+					layout_strategy = "horizontal",
+					layout_config = {
+						prompt_position = "top",
+						preview_cutoff = 120,
+						horizontal = {
+							width = 0.5,
+							height = 0.4,
+							preview_width = 0.6,
+						},
+					},
+				},
+				live_grep = {
+					only_sort_text = true,
+					previewer = true,
+					layout_config = {
+						horizontal = {
+							width = 0.9,
+							height = 0.75,
+							preview_width = 0.6,
+						},
+					},
+				},
+				grep_string = {
+					only_sort_text = true,
+					previewer = true,
+					layout_config = {
+						horizontal = {
+							width = 0.9,
+							height = 0.75,
+							preview_width = 0.6,
+						},
+					},
+				},
+				lsp_references = {
+					show_line = false,
+					previewer = true,
+					layout_config = {
+						horizontal = {
+							width = 0.9,
+							height = 0.75,
+							preview_width = 0.6,
+						},
+					},
+				},
+			},
+			extensions = {
+				fzf = {
+					fuzzy = true,    -- false will only do exact matching
+					override_generic_sorter = true, -- override the generic sorter
+					override_file_sorter = true, -- override the file sorter
+					case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+				},
+				["ui-select"] = function()
+					require("telescope.themes").get_dropdown({
 						previewer = false,
-						initial_mode = "insert",
-						select_strategy = "reset",
+						initial_mode = "normal",
 						sorting_strategy = "ascending",
 						layout_strategy = "horizontal",
 						layout_config = {
-							prompt_position = "top",
-							preview_cutoff = 120,
 							horizontal = {
 								width = 0.5,
 								height = 0.4,
 								preview_width = 0.6,
 							},
 						},
-					},
-					git_files = {
-						hidden = true,
-						previewer = false,
-						initial_mode = "insert",
-						select_strategy = "reset",
-						sorting_strategy = "ascending",
-						layout_strategy = "horizontal",
-						layout_config = {
-							prompt_position = "top",
-							preview_cutoff = 120,
-							horizontal = {
-								width = 0.5,
-								height = 0.4,
-								preview_width = 0.6,
-							},
-						},
-					},
-					buffers = {
-						hidden = true,
-						previewer = false,
-						initial_mode = "insert",
-						select_strategy = "reset",
-						sorting_strategy = "ascending",
-						layout_strategy = "horizontal",
-						layout_config = {
-							prompt_position = "top",
-							preview_cutoff = 120,
-							horizontal = {
-								width = 0.5,
-								height = 0.4,
-								preview_width = 0.6,
-							},
-						},
-					},
-					live_grep = {
-						--@usage don't include the filename in the search results
-						only_sort_text = true,
-						previewer = true,
-						layout_config = {
-							horizontal = {
-								width = 0.9,
-								height = 0.75,
-								preview_width = 0.6,
-							},
-						},
-					},
-					grep_string = {
-						--@usage don't include the filename in the search results
-						only_sort_text = true,
-						previewer = true,
-						layout_config = {
-							horizontal = {
-								width = 0.9,
-								height = 0.75,
-								preview_width = 0.6,
-							},
-						},
-					},
-					lsp_references = {
-						show_line = false,
-						layout_config = {
-							horizontal = {
-								width = 0.9,
-								height = 0.75,
-								preview_width = 0.6,
-							},
-						},
-					},
-				},
-				extensions = {
-					fzf = {
-						fuzzy = true, -- false will only do exact matching
-						override_generic_sorter = true, -- override the generic sorter
-						override_file_sorter = true, -- override the file sorter
-						case_mode = "smart_case", -- or "ignore_case" or "respect_case"
-					},
-					["ui-select"] = {
-						require("telescope.themes").get_dropdown({
-							previewer = false,
-							initial_mode = "normal",
-							sorting_strategy = "ascending",
-							layout_strategy = "horizontal",
-							layout_config = {
-								horizontal = {
-									width = 0.5,
-									height = 0.4,
-									preview_width = 0.6,
-								},
-							},
-						}),
-					},
-				},
-			})
-		end,
+					})
+				end
+			},
+		}
 	},
 
 	-- autopairs
@@ -494,6 +506,51 @@ require("lazy").setup({
 			require("Comment").setup()
 		end,
 	},
+
+	{
+        "zbirenbaum/copilot.lua",
+        enabled = true,
+        cmd = "Copilot",
+        event = "InsertEnter",
+        config = function()
+            require("copilot").setup({
+                panel = {
+                    enabled = false,
+                    auto_refresh = true,
+                    keymap = {
+                        jump_next = "<c-j>",
+                        jump_prev = "<c-k>",
+                        accept = "<c-a>",
+                        refresh = "r",
+                        open = "<M-CR>",
+                    },
+                    layout = {
+                        position = "bottom", -- | top | left | right
+                        ratio = 0.4,
+                    },
+                },
+                suggestion = {
+                    enabled = false,
+                    auto_trigger = true,
+                    debounce = 75,
+                    keymap = {
+                        accept = "<c-a>",
+                        accept_word = false,
+                        accept_line = false,
+                        next = "<c-j>",
+                        prev = "<c-k>",
+                        dismiss = "<C-e>",
+                    },
+                },
+            })
+        end
+    },
+	{
+		"zbirenbaum/copilot-cmp",
+		config = function ()
+		  require("copilot_cmp").setup()
+		end
+	  }
 })
 
 ----------------
@@ -570,6 +627,7 @@ vim.keymap.set("i", "jk", "<ESC>")
 -- Remove search highlight
 vim.keymap.set("n", "<Leader>h", ":nohlsearch<CR>")
 
+-- goodies
 vim.keymap.set("n", "n", "nzzzv", { noremap = true })
 vim.keymap.set("n", "N", "Nzzzv", { noremap = true })
 vim.keymap.set("n", "J", "mzJ`z")
@@ -592,6 +650,9 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 vim.keymap.set("n", "<leader>c", ":bd<cr>")
+
+-- lazygit
+vim.keymap.set("n", "<leader>gg", ":LazyGit<CR>")
 
 -- autocommands
 -- don't auto comment new line
@@ -671,7 +732,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- open telescope when neovim starts
+-- open telescope when neovim starts only if no other plugin is opening
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		vim.cmd("silent! lua require('telescope.builtin').find_files()")
