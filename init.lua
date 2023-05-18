@@ -527,55 +527,58 @@ for k, v in pairs(options) do
 	vim.opt[k] = v
 end
 
+local opts = { noremap = true, silent = true }
+local map = vim.keymap.set
+
 -- Keymaps --
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 
 -- Fast saving
-vim.keymap.set("n", "<Leader>w", ":write!<CR>")
-vim.keymap.set("n", "<Leader>q", ":q!<CR>", { silent = true })
+map("n", "<Leader>w", ":write!<CR>", opts)
+map("n", "<Leader>q", ":q!<CR>", opts)
 
 -- Some useful quickfix shortcuts for quickfix
-vim.keymap.set("n", "<C-n>", "<cmd>cnext<CR>zz")
-vim.keymap.set("n", "<C-m>", "<cmd>cprev<CR>zz")
-vim.keymap.set("n", "<leader>a", "<cmd>cclose<CR>")
+map("n", "<C-n>", "<cmd>cnext<CR>zz", opts)
+map("n", "<C-m>", "<cmd>cprev<CR>zz", opts)
+map("n", "<leader>a", "<cmd>cclose<CR>", opts)
 
 -- Exit on jj and jk
-vim.keymap.set("n", "j", "gj")
-vim.keymap.set("n", "k", "gk")
+map("n", "j", "gj", opts)
+map("n", "k", "gk", opts)
 
 -- Exit on jj and jk
-vim.keymap.set("i", "jj", "<ESC>")
-vim.keymap.set("i", "jk", "<ESC>")
+map("i", "jj", "<ESC>", opts)
+map("i", "jk", "<ESC>", opts)
 
 -- Remove search highlight
-vim.keymap.set("n", "<Leader>h", ":nohlsearch<CR>")
+map("n", "<Leader>h", ":nohlsearch<CR>", opts)
 
 -- goodies
-vim.keymap.set("n", "n", "nzzzv", { noremap = true })
-vim.keymap.set("n", "N", "Nzzzv", { noremap = true })
-vim.keymap.set("n", "J", "mzJ`z")
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
+map("n", "n", "nzzzv", opts)
+map("n", "N", "Nzzzv", opts)
+map("n", "J", "mzJ`z", opts)
+map("n", "<C-d>", "<C-d>zz", opts)
+map("n", "<C-u>", "<C-u>zz", opts)
 
 -- If I visually select words and paste from clipboard, don't replace my
 -- clipboard with the selected word, instead keep my old word in the
 -- clipboard
-vim.keymap.set("x", "p", '"_dP')
+map("x", "p", '"_dP', opts)
 
 -- Better split switching
-vim.keymap.set("", "<C-j>", "<C-W>j")
-vim.keymap.set("", "<C-k>", "<C-W>k")
-vim.keymap.set("", "<C-h>", "<C-W>h")
-vim.keymap.set("", "<C-l>", "<C-W>l")
+map("", "<C-j>", "<C-W>j", opts)
+map("", "<C-k>", "<C-W>k", opts)
+map("", "<C-h>", "<C-W>h", opts)
+map("", "<C-l>", "<C-W>l", opts)
 
 -- Visually select lines, and move them up/down
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+map("v", "J", ":m '>+1<CR>gv=gv", opts)
+map("v", "K", ":m '<-2<CR>gv=gv", opts)
 
-vim.keymap.set("n", "<leader>c", ":bd<cr>")
+map("n", "<leader>c", ":bd<cr>", opts)
 
 -- lazygit
-vim.keymap.set("n", "<leader>gg", ":LazyGit<CR>")
+map("n", "<leader>gg", ":LazyGit<CR>", opts)
 
 -- autocommands
 -- don't auto comment new line
