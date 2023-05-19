@@ -106,7 +106,7 @@ require("lazy").setup({
 			end
 
 			local colors = {
-				fg = "#838994",
+				fg = "#76787d",
 				bg = "#252829",
 			}
 			require("lualine").setup({
@@ -757,4 +757,14 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		vim.cmd("silent! lua require('telescope.builtin').find_files()")
 	end,
+})
+
+-- change the background color of floating windows
+vim.api.nvim_set_hl(0, "NormalFloat", {
+	bg = "bg",
+	fg = "#d8bd92",
+})
+vim.api.nvim_set_hl(0, "FloatBorder", {
+	bg = "bg",
+	fg = "#d8bd92",
 })
