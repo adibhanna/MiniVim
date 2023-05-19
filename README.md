@@ -1,6 +1,6 @@
 # MiniVim
 
-Only what you need to code. 
+Only what you need to code.
 
 ## Plugins
 
