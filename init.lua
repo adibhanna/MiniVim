@@ -181,8 +181,63 @@ require("lazy").setup({
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    config = function ()
-      require('gitsigns').setup()
+    config = function()
+      require('gitsigns').setup({
+        on_attach = function(bufnr)
+          local gs = package.loaded.gitsigns
+
+          local function map(mode, l, r, opts)
+            opts = opts or {}
+            opts.buffer = bufnr
+            vim.keymap.set(mode, l, r, opts)
+          end
+
+          -- Navigation
+          map('n', ']c', function()
+            if vim.wo.diff then return ']c' end
+            vim.schedule(function() gs.next_hunk() end)
+            return '<Ignore>'
+          end, { expr = true })
+
+          map('n', '[c', function()
+            if vim.wo.diff then return '[c' end
+            vim.schedule(function() gs.prev_hunk() end)
+            return '<Ignore>'
+          end, { expr = true })
+
+          -- Actions
+          -- Gitsigns
+          map('n', ']h', '<CMD>lua require"gitsigns.actions".next_hunk()<CR>')
+          map('n', '[h', '<CMD>lua require"gitsigns.actions".prev_hunk()<CR>')
+          map('n', '<leader>gs', '<CMD>lua require"gitsigns".stage_hunk()<CR>')
+          map('n', '<leader>gu', '<CMD>lua require"gitsigns".undo_stage_hunk()<CR>')
+          map('n', '<leader>gr', '<CMD>lua require"gitsigns".reset_hunk()<CR>')
+          map('n', '<leader>gR', '<CMD>lua require"gitsigns".reset_buffer()<CR>')
+          map('n', '<leader>gp', '<CMD>lua require"gitsigns".preview_hunk()<CR>')
+          map('n', '<leader>gb', '<CMD>lua require"gitsigns".blame_line()<CR>')
+          map('n', '<leader>gS', '<CMD>lua require"gitsigns".stage_buffer()<CR>')
+          map('n', '<leader>gD', '<CMD>lua require"gitsigns".diffthis()<CR>')
+          map('n', '<leader>gT', '<CMD>lua require"gitsigns".toggle_current_line_blame()<CR>')
+          map('n', '<leader>gd', '<CMD>lua require"gitsigns".toggle_deleted()<CR>')
+
+          -- map('n', '<leader>hs', gs.stage_hunk)
+          -- map('n', '<leader>hr', gs.reset_hunk)
+          -- map('v', '<leader>hs', function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end)
+          -- map('v', '<leader>hr', function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end)
+          -- map('n', '<leader>hS', gs.stage_buffer)
+          -- map('n', '<leader>hu', gs.undo_stage_hunk)
+          -- map('n', '<leader>hR', gs.reset_buffer)
+          -- map('n', '<leader>hp', gs.preview_hunk)
+          -- map('n', '<leader>hb', function() gs.blame_line { full = true } end)
+          -- map('n', '<leader>tb', gs.toggle_current_line_blame)
+          -- map('n', '<leader>hd', gs.diffthis)
+          -- map('n', '<leader>hD', function() gs.diffthis('~') end)
+          -- map('n', '<leader>td', gs.toggle_deleted)
+
+          -- Text object
+          map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+        end
+      })
     end
   },
 
@@ -666,6 +721,7 @@ require("lazy").setup({
     end
   },
 
+  -- glance
   {
     "dnlhc/glance.nvim",
     config = function()
@@ -779,7 +835,7 @@ local options = {
   ruler = false,                           -- Don't show the ruler
   guifont = "monospace:h17",               -- the font used in graphical neovim applications
   title = true,                            -- set the title of window to the value of the titlestring
-  modifiable = true,                   -- allow a buffer to be modified
+  modifiable = true,                       -- allow a buffer to be modified
 }
 
 for k, v in pairs(options) do
@@ -844,19 +900,6 @@ vim.keymap.set('n', 'gR', '<CMD>Glance references<CR>')
 vim.keymap.set('n', 'gY', '<CMD>Glance type_definitions<CR>')
 vim.keymap.set('n', 'gM', '<CMD>Glance implementations<CR>')
 
--- Gitsigns
-vim.keymap.set('n', ']h', '<CMD>lua require"gitsigns.actions".next_hunk()<CR>')
-vim.keymap.set('n', '[h', '<CMD>lua require"gitsigns.actions".prev_hunk()<CR>')
-vim.keymap.set('n', '<leader>gs', '<CMD>lua require"gitsigns".stage_hunk()<CR>')
-vim.keymap.set('n', '<leader>gu', '<CMD>lua require"gitsigns".undo_stage_hunk()<CR>')
-vim.keymap.set('n', '<leader>gr', '<CMD>lua require"gitsigns".reset_hunk()<CR>')
-vim.keymap.set('n', '<leader>gR', '<CMD>lua require"gitsigns".reset_buffer()<CR>')
-vim.keymap.set('n', '<leader>gp', '<CMD>lua require"gitsigns".preview_hunk()<CR>')
-vim.keymap.set('n', '<leader>gb', '<CMD>lua require"gitsigns".blame_line()<CR>')
-vim.keymap.set('n', '<leader>gS', '<CMD>lua require"gitsigns".stage_buffer()<CR>')
-vim.keymap.set('n', '<leader>gD', '<CMD>lua require"gitsigns".diffthis()<CR>')
-vim.keymap.set('n', '<leader>gT', '<CMD>lua require"gitsigns".toggle_current_line_blame()<CR>')
-vim.keymap.set('n', '<leader>gd', '<CMD>lua require"gitsigns".toggle_deleted()<CR>')
 
 -- autocommands
 -- don't auto comment new line
