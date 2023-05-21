@@ -14,6 +14,10 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local colors = {
+  fg = "#76787d",
+  bg = "#252829",
+}
 
 require("lazy").setup({
 
@@ -68,10 +72,6 @@ require("lazy").setup({
     version = "*",
     dependencies = 'nvim-tree/nvim-web-devicons',
     config = function()
-      local colors = {
-        fg = "#76787d",
-        bg = "#252829",
-      }
       require('bufferline').setup({
         options = {
           indicator = {
@@ -110,6 +110,15 @@ require("lazy").setup({
           tab_close = {
             bg = colors.bg
           },
+          tab_separator = {
+            fg = colors.bg,
+            bg = colors.bg
+          },
+          tab_separator_selected = {
+            fg = colors.bg,
+            bg = colors.bg,
+            sp = colors.fg
+          },
           close_button = {
             bg = colors.bg,
             fg = colors.fg
@@ -131,37 +140,50 @@ require("lazy").setup({
             bg = colors.bg,
           },
           duplicate = {
+            fg = colors.fg,
             bg = colors.bg
           },
           duplicate_visible = {
+            fg = colors.fg,
             bg = colors.bg
           },
           separator = {
-            fg = { attribute = 'bg', highlight = 'StatusLine' },
+            fg = colors.bg,
             bg = colors.bg
           },
           separator_selected = {
             fg = colors.bg,
-            bg = { attribute = 'bg', highlight = 'Normal' }
+            bg = colors.bg
           },
           separator_visible = {
             fg = colors.bg,
             bg = colors.bg
           },
+          offset_separator = {
+            fg = colors.bg,
+            bg = colors.bg
+          },
+
+          -- indicator_visible = {
+          --   fg = colors.fg,
+          --   bg = colors.bg
+          -- },
+          -- indicator_selected = {
+          --   fg = colors.fg,
+          --   bg = colors.bg
+          -- },
         },
       })
     end
   },
 
-  -- git signs
+  -- gitsigns
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
-  },
-
-  -- lazygit
-  {
-    "kdheepak/lazygit.nvim"
+    config = function ()
+      require('gitsigns').setup()
+    end
   },
 
   -- lualine
@@ -230,10 +252,6 @@ require("lazy").setup({
         return vim.bo.filetype
       end
 
-      local colors = {
-        fg = "#76787d",
-        bg = "#252829",
-      }
       require("lualine").setup({
         options = {
           theme = {
@@ -638,6 +656,25 @@ require("lazy").setup({
     end,
   },
 
+  -- neoscroll
+  {
+    "karb94/neoscroll.nvim",
+    config = function()
+      require('neoscroll').setup({
+        stop_eof = true,
+      })
+    end
+  },
+
+  {
+    "dnlhc/glance.nvim",
+    config = function()
+      require('glance').setup({
+        -- your configuration
+      })
+    end,
+  },
+
   -- comments
   {
     "numToStr/Comment.nvim",
@@ -742,7 +779,7 @@ local options = {
   ruler = false,                           -- Don't show the ruler
   guifont = "monospace:h17",               -- the font used in graphical neovim applications
   title = true,                            -- set the title of window to the value of the titlestring
-  -- modifiable = false,                   -- allow a buffer to be modified
+  modifiable = true,                   -- allow a buffer to be modified
 }
 
 for k, v in pairs(options) do
@@ -789,10 +826,11 @@ map("n", "<C-u>", "<C-u>zz", opts)
 map("x", "p", '"_dP', opts)
 
 -- Better split switching
-map("", "<C-j>", "<C-W>j", opts)
-map("", "<C-k>", "<C-W>k", opts)
-map("", "<C-h>", "<C-W>h", opts)
-map("", "<C-l>", "<C-W>l", opts)
+map("n", "<C-h>", "<C-w>h", opts)
+map("n", "<C-j>", "<C-w>j", opts)
+map("n", "<C-k>", "<C-w>k", opts)
+map("n", "<C-l>", "<C-w>l", opts)
+
 
 -- Visually select lines, and move them up/down
 map("v", "J", ":m '>+1<CR>gv=gv", opts)
@@ -800,8 +838,25 @@ map("v", "K", ":m '<-2<CR>gv=gv", opts)
 
 map("n", "<leader>c", ":bd<cr>", opts)
 
--- lazygit
-map("n", "<leader>gg", ":LazyGit<CR>", opts)
+-- Glance
+vim.keymap.set('n', 'gD', '<CMD>Glance definitions<CR>')
+vim.keymap.set('n', 'gR', '<CMD>Glance references<CR>')
+vim.keymap.set('n', 'gY', '<CMD>Glance type_definitions<CR>')
+vim.keymap.set('n', 'gM', '<CMD>Glance implementations<CR>')
+
+-- Gitsigns
+vim.keymap.set('n', ']h', '<CMD>lua require"gitsigns.actions".next_hunk()<CR>')
+vim.keymap.set('n', '[h', '<CMD>lua require"gitsigns.actions".prev_hunk()<CR>')
+vim.keymap.set('n', '<leader>gs', '<CMD>lua require"gitsigns".stage_hunk()<CR>')
+vim.keymap.set('n', '<leader>gu', '<CMD>lua require"gitsigns".undo_stage_hunk()<CR>')
+vim.keymap.set('n', '<leader>gr', '<CMD>lua require"gitsigns".reset_hunk()<CR>')
+vim.keymap.set('n', '<leader>gR', '<CMD>lua require"gitsigns".reset_buffer()<CR>')
+vim.keymap.set('n', '<leader>gp', '<CMD>lua require"gitsigns".preview_hunk()<CR>')
+vim.keymap.set('n', '<leader>gb', '<CMD>lua require"gitsigns".blame_line()<CR>')
+vim.keymap.set('n', '<leader>gS', '<CMD>lua require"gitsigns".stage_buffer()<CR>')
+vim.keymap.set('n', '<leader>gD', '<CMD>lua require"gitsigns".diffthis()<CR>')
+vim.keymap.set('n', '<leader>gT', '<CMD>lua require"gitsigns".toggle_current_line_blame()<CR>')
+vim.keymap.set('n', '<leader>gd', '<CMD>lua require"gitsigns".toggle_deleted()<CR>')
 
 -- autocommands
 -- don't auto comment new line
