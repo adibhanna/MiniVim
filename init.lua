@@ -39,11 +39,11 @@ require("lazy").setup({
     end,
   },
   {
-    'projekt0n/github-nvim-theme',
+    "projekt0n/github-nvim-theme",
     lazy = false,    -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
-      require('github-theme').setup({
+      require("github-theme").setup({
         -- ...
       })
 
@@ -60,22 +60,38 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
     },
     cmd = "Neotree",
-    config = function()
-      require('neo-tree').setup()
-    end
+    init = function()
+      vim.g.neo_tree_remove_legacy_commands = 1
+      if vim.fn.argc() == 1 then
+        local stat = vim.loop.fs_stat(vim.fn.argv(0))
+        if stat and stat.type == "directory" then
+          require("neo-tree")
+        end
+      end
+    end,
+    config = function(_, opts)
+      require("neo-tree").setup(opts)
+    end,
+    opts = {
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = false,
+        },
+      },
+    },
   },
-
   -- bufferline
   {
-    'akinsho/bufferline.nvim',
+    "akinsho/bufferline.nvim",
     event = "VeryLazy",
     version = "*",
-    dependencies = 'nvim-tree/nvim-web-devicons',
+    dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
-      require('bufferline').setup({
+      require("bufferline").setup({
         options = {
           indicator = {
-            icon = ' ',
+            icon = " ",
           },
           show_close_icon = false,
           tab_size = 0,
@@ -83,55 +99,55 @@ require("lazy").setup({
           offsets = {
             {
               filetype = "neo-tree",
-              text = '  Project',
+              text = "  Project",
               highlight = "Directory",
               text_align = "left",
             },
           },
-          modified_icon = '',
+          modified_icon = "",
           custom_areas = {
             left = function()
               return {
-                { text = '    ', fg = colors.fg },
+                { text = "    ", fg = colors.fg },
               }
             end,
           },
         },
         highlights = {
           fill = {
-            bg = colors.bg
+            bg = colors.bg,
           },
           background = {
-            bg = colors.bg
+            bg = colors.bg,
           },
           tab = {
-            bg = colors.bg
+            bg = colors.bg,
           },
           tab_close = {
-            bg = colors.bg
+            bg = colors.bg,
           },
           tab_separator = {
             fg = colors.bg,
-            bg = colors.bg
+            bg = colors.bg,
           },
           tab_separator_selected = {
             fg = colors.bg,
             bg = colors.bg,
-            sp = colors.fg
+            sp = colors.fg,
           },
           close_button = {
             bg = colors.bg,
-            fg = colors.fg
+            fg = colors.fg,
           },
           close_button_visible = {
             bg = colors.bg,
-            fg = colors.fg
+            fg = colors.fg,
           },
           close_button_selected = {
-            fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
+            fg = { attribute = "fg", highlight = "StatusLineNonText" },
           },
           buffer_visible = {
-            bg = colors.bg
+            bg = colors.bg,
           },
           modified = {
             bg = colors.bg,
@@ -141,27 +157,27 @@ require("lazy").setup({
           },
           duplicate = {
             fg = colors.fg,
-            bg = colors.bg
+            bg = colors.bg,
           },
           duplicate_visible = {
             fg = colors.fg,
-            bg = colors.bg
+            bg = colors.bg,
           },
           separator = {
             fg = colors.bg,
-            bg = colors.bg
+            bg = colors.bg,
           },
           separator_selected = {
             fg = colors.bg,
-            bg = colors.bg
+            bg = colors.bg,
           },
           separator_visible = {
             fg = colors.bg,
-            bg = colors.bg
+            bg = colors.bg,
           },
           offset_separator = {
             fg = colors.bg,
-            bg = colors.bg
+            bg = colors.bg,
           },
 
           -- indicator_visible = {
@@ -174,7 +190,7 @@ require("lazy").setup({
           -- },
         },
       })
-    end
+    end,
   },
 
   -- gitsigns
@@ -182,7 +198,7 @@ require("lazy").setup({
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      require('gitsigns').setup({
+      require("gitsigns").setup({
         on_attach = function(bufnr)
           local gs = package.loaded.gitsigns
 
@@ -193,32 +209,40 @@ require("lazy").setup({
           end
 
           -- Navigation
-          map('n', ']c', function()
-            if vim.wo.diff then return ']c' end
-            vim.schedule(function() gs.next_hunk() end)
-            return '<Ignore>'
+          map("n", "]c", function()
+            if vim.wo.diff then
+              return "]c"
+            end
+            vim.schedule(function()
+              gs.next_hunk()
+            end)
+            return "<Ignore>"
           end, { expr = true })
 
-          map('n', '[c', function()
-            if vim.wo.diff then return '[c' end
-            vim.schedule(function() gs.prev_hunk() end)
-            return '<Ignore>'
+          map("n", "[c", function()
+            if vim.wo.diff then
+              return "[c"
+            end
+            vim.schedule(function()
+              gs.prev_hunk()
+            end)
+            return "<Ignore>"
           end, { expr = true })
 
           -- Actions
           -- Gitsigns
-          map('n', ']h', '<CMD>lua require"gitsigns.actions".next_hunk()<CR>')
-          map('n', '[h', '<CMD>lua require"gitsigns.actions".prev_hunk()<CR>')
-          map('n', '<leader>gs', '<CMD>lua require"gitsigns".stage_hunk()<CR>')
-          map('n', '<leader>gu', '<CMD>lua require"gitsigns".undo_stage_hunk()<CR>')
-          map('n', '<leader>gr', '<CMD>lua require"gitsigns".reset_hunk()<CR>')
-          map('n', '<leader>gR', '<CMD>lua require"gitsigns".reset_buffer()<CR>')
-          map('n', '<leader>gp', '<CMD>lua require"gitsigns".preview_hunk()<CR>')
-          map('n', '<leader>gb', '<CMD>lua require"gitsigns".blame_line()<CR>')
-          map('n', '<leader>gS', '<CMD>lua require"gitsigns".stage_buffer()<CR>')
-          map('n', '<leader>gD', '<CMD>lua require"gitsigns".diffthis()<CR>')
-          map('n', '<leader>gT', '<CMD>lua require"gitsigns".toggle_current_line_blame()<CR>')
-          map('n', '<leader>gd', '<CMD>lua require"gitsigns".toggle_deleted()<CR>')
+          map("n", "]h", '<CMD>lua require"gitsigns.actions".next_hunk()<CR>')
+          map("n", "[h", '<CMD>lua require"gitsigns.actions".prev_hunk()<CR>')
+          map("n", "<leader>gs", '<CMD>lua require"gitsigns".stage_hunk()<CR>')
+          map("n", "<leader>gu", '<CMD>lua require"gitsigns".undo_stage_hunk()<CR>')
+          map("n", "<leader>gr", '<CMD>lua require"gitsigns".reset_hunk()<CR>')
+          map("n", "<leader>gR", '<CMD>lua require"gitsigns".reset_buffer()<CR>')
+          map("n", "<leader>gp", '<CMD>lua require"gitsigns".preview_hunk()<CR>')
+          map("n", "<leader>gb", '<CMD>lua require"gitsigns".blame_line()<CR>')
+          map("n", "<leader>gS", '<CMD>lua require"gitsigns".stage_buffer()<CR>')
+          map("n", "<leader>gD", '<CMD>lua require"gitsigns".diffthis()<CR>')
+          map("n", "<leader>gT", '<CMD>lua require"gitsigns".toggle_current_line_blame()<CR>')
+          map("n", "<leader>gd", '<CMD>lua require"gitsigns".toggle_deleted()<CR>')
 
           -- map('n', '<leader>hs', gs.stage_hunk)
           -- map('n', '<leader>hr', gs.reset_hunk)
@@ -235,23 +259,24 @@ require("lazy").setup({
           -- map('n', '<leader>td', gs.toggle_deleted)
 
           -- Text object
-          map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
-        end
+          map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+        end,
       })
-    end
+    end,
   },
 
   -- lualine
   {
-    'nvim-lualine/lualine.nvim',
+    "nvim-lualine/lualine.nvim",
+    enabled = false,
     event = "VeryLazy",
     dependencies = {
-      'nvim-tree/nvim-web-devicons',
+      "nvim-tree/nvim-web-devicons",
     },
     config = function()
       local function location()
-        local line = vim.fn.line "."
-        local col = vim.fn.virtcol "."
+        local line = vim.fn.line(".")
+        local col = vim.fn.virtcol(".")
         return string.format("Ln %d,Col %d", line, col)
       end
       local diagnostics = {
@@ -277,7 +302,7 @@ require("lazy").setup({
         always_visible = true,    -- Show diagnostics even if there are none.
       }
       local copilot = function()
-        local buf_clients = vim.lsp.get_active_clients { bufnr = 0 }
+        local buf_clients = vim.lsp.get_active_clients({ bufnr = 0 })
         if #buf_clients == 0 then
           return "LSP Inactive"
         end
@@ -325,7 +350,7 @@ require("lazy").setup({
               b = { bg = colors.fg, fg = colors.bg },
               c = { bg = colors.fg, fg = colors.bg },
             },
-          }
+          },
         },
         sections = {
           lualine_a = { "branch" },
@@ -338,7 +363,7 @@ require("lazy").setup({
           lualine_z = { "progress" },
         },
       })
-    end
+    end,
   },
 
   -- LSP ZERO
@@ -599,9 +624,9 @@ require("lazy").setup({
               },
             },
           })
-        end
+        end,
       },
-    }
+    },
   },
 
   -- autopairs
@@ -715,17 +740,18 @@ require("lazy").setup({
   {
     "karb94/neoscroll.nvim",
     config = function()
-      require('neoscroll').setup({
+      require("neoscroll").setup({
         stop_eof = true,
+        easing_function = "sine",
       })
-    end
+    end,
   },
 
   -- glance
   {
     "dnlhc/glance.nvim",
     config = function()
-      require('glance').setup({
+      require("glance").setup({
         -- your configuration
       })
     end,
@@ -777,15 +803,15 @@ require("lazy").setup({
           },
         },
       })
-    end
+    end,
   },
   -- copilot cmp
   {
     "zbirenbaum/copilot-cmp",
     config = function()
       require("copilot_cmp").setup()
-    end
-  }
+    end,
+  },
 })
 
 ----------------
@@ -842,12 +868,65 @@ for k, v in pairs(options) do
   vim.opt[k] = v
 end
 
+
+local function is_dir(filepath)
+  local ok, _ = os.rename(filepath, filepath)
+  return ok
+end
+
+function GitBranch()
+  local cmd = 'git branch --show-current'
+
+  local is_dir = is_dir(vim.fn.getcwd() .. '/.git')
+  if not is_dir then
+    return ''
+  end
+
+  local fp = io.popen(cmd)
+  local branch = fp:read('*a')
+
+  branch = string.sub(branch, 0, -2)
+  return [[ ]] .. branch
+end
+
+function LSPStatus()
+  local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+  local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+
+  if errors > 0 then
+    return '  ' .. errors .. ' '
+  elseif warnings > 0 then
+    return '  ' .. warnings .. ' '
+  else
+    return ''
+  end
+end
+
+function StatusLine()
+  local status = ''
+
+  -- left side
+  status = status .. [[ %-{luaeval("GitBranch()")}]]
+  status = status .. [[ %-F]]
+  status = status .. [[ %{luaeval("LSPStatus()")}]]
+
+  -- right side
+  status = status .. [[ %= %y LN %l/%L]]
+
+  return status
+end
+
+vim.wo.statusline = '%!luaeval("StatusLine()")'
+vim.api.nvim_set_hl(0, "StatusLine", { bg = colors.bg, fg = colors.fg })
+
+
+-- other stuff
 local opts = { noremap = true, silent = true }
-local map = vim.keymap.set
+local map = vim.api.nvim_set_keymap
 
 -- Keymaps --
 -- vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
-map('n', '<leader>e', ':Neotree toggle<CR>', opts)
+map("n", "<leader>e", ":Neotree toggle<CR>", opts)
 
 -- Fast saving
 map("n", "<Leader>w", ":write!<CR>", opts)
@@ -887,7 +966,6 @@ map("n", "<C-j>", "<C-w>j", opts)
 map("n", "<C-k>", "<C-w>k", opts)
 map("n", "<C-l>", "<C-w>l", opts)
 
-
 -- Visually select lines, and move them up/down
 map("v", "J", ":m '>+1<CR>gv=gv", opts)
 map("v", "K", ":m '<-2<CR>gv=gv", opts)
@@ -895,11 +973,10 @@ map("v", "K", ":m '<-2<CR>gv=gv", opts)
 map("n", "<leader>c", ":bd<cr>", opts)
 
 -- Glance
-vim.keymap.set('n', 'gD', '<CMD>Glance definitions<CR>')
-vim.keymap.set('n', 'gR', '<CMD>Glance references<CR>')
-vim.keymap.set('n', 'gY', '<CMD>Glance type_definitions<CR>')
-vim.keymap.set('n', 'gM', '<CMD>Glance implementations<CR>')
-
+vim.keymap.set("n", "gD", "<CMD>Glance definitions<CR>")
+vim.keymap.set("n", "gR", "<CMD>Glance references<CR>")
+vim.keymap.set("n", "gY", "<CMD>Glance type_definitions<CR>")
+vim.keymap.set("n", "gM", "<CMD>Glance implementations<CR>")
 
 -- autocommands
 -- don't auto comment new line
