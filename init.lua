@@ -869,23 +869,19 @@ for k, v in pairs(options) do
 end
 
 
-local function is_dir(filepath)
-  local ok, _ = os.rename(filepath, filepath)
-  return ok
-end
-
 function GitBranch()
-  local cmd = 'git branch --show-current'
-
-  local is_dir = is_dir(vim.fn.getcwd() .. '/.git')
-  if not is_dir then
+  local ok, _ = os.rename(vim.fn.getcwd() .. '/.git', vim.fn.getcwd() .. '/.git')
+  if not ok then
     return ''
   end
 
-  local fp = io.popen(cmd)
+  local fp = io.popen('git branch --show-current')
   local branch = fp:read('*a')
+  if not branch then
+    return ''
+  end
 
-  branch = string.sub(branch, 0, -2)
+  branch = string.gsub(branch, '\n', '')
   return [[ ]] .. branch
 end
 
@@ -909,7 +905,6 @@ function StatusLine()
   status = status .. [[ %-{luaeval("GitBranch()")}]]
   status = status .. [[ %-F]]
   status = status .. [[ %{luaeval("LSPStatus()")}]]
-
   -- right side
   status = status .. [[ %= %y LN %l/%L]]
 
@@ -918,6 +913,8 @@ end
 
 vim.wo.statusline = '%!luaeval("StatusLine()")'
 vim.api.nvim_set_hl(0, "StatusLine", { bg = colors.bg, fg = colors.fg })
+
+
 
 
 -- other stuff
