@@ -18,7 +18,6 @@ local colors = {
   fg = "#76787d",
   bg = "#252829",
 }
-
 require("lazy").setup({
 
   -- colorscheme
@@ -28,6 +27,9 @@ require("lazy").setup({
     config = function()
       vim.o.background = "dark"
       vim.g.gruvbox_material_background = "hard"
+      -- transparent background
+      vim.g.gruvbox_material_transparent_background = 1
+
       vim.cmd.colorscheme("gruvbox-material")
     end,
   },
@@ -115,69 +117,69 @@ require("lazy").setup({
         },
         highlights = {
           fill = {
-            bg = colors.bg,
+            bg = "",
           },
           background = {
-            bg = colors.bg,
+            bg = "",
           },
           tab = {
-            bg = colors.bg,
+            bg = "",
           },
           tab_close = {
-            bg = colors.bg,
+            bg = "",
           },
           tab_separator = {
             fg = colors.bg,
-            bg = colors.bg,
+            bg = "",
           },
           tab_separator_selected = {
             fg = colors.bg,
-            bg = colors.bg,
+            bg = "",
             sp = colors.fg,
           },
           close_button = {
-            bg = colors.bg,
+            bg = "",
             fg = colors.fg,
           },
           close_button_visible = {
-            bg = colors.bg,
+            bg = "",
             fg = colors.fg,
           },
           close_button_selected = {
             fg = { attribute = "fg", highlight = "StatusLineNonText" },
           },
           buffer_visible = {
-            bg = colors.bg,
+            bg = "",
           },
           modified = {
-            bg = colors.bg,
+            bg = "",
           },
           modified_visible = {
-            bg = colors.bg,
+            bg = "",
           },
           duplicate = {
             fg = colors.fg,
-            bg = colors.bg,
+            bg = ""
           },
           duplicate_visible = {
             fg = colors.fg,
-            bg = colors.bg,
+            bg = ""
           },
           separator = {
             fg = colors.bg,
-            bg = colors.bg,
+            bg = ""
           },
           separator_selected = {
             fg = colors.bg,
-            bg = colors.bg,
+            bg = ""
           },
           separator_visible = {
             fg = colors.bg,
-            bg = colors.bg,
+            bg = ""
           },
           offset_separator = {
             fg = colors.bg,
-            bg = colors.bg,
+            bg = ""
           },
 
           -- indicator_visible = {
@@ -191,6 +193,106 @@ require("lazy").setup({
         },
       })
     end,
+  },
+
+  -- lualine
+  {
+    'nvim-lualine/lualine.nvim',
+    event = "VeryLazy",
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      local function location()
+        local line = vim.fn.line "."
+        local col = vim.fn.virtcol "."
+        return string.format("Ln %d,Col %d", line, col)
+      end
+      local diagnostics = {
+        "diagnostics",
+
+        sources = { "nvim_diagnostic" },
+        sections = { "error", "warn" },
+
+        diagnostics_color = {
+          error = "Statusline",
+          warn = "Statusline",
+          info = "Statusline",
+          hint = "Statusline",
+        },
+        symbols = {
+          error = "" .. " ",
+          warn = "" .. " ",
+          info = "I",
+          hint = "H",
+        },
+        colored = false,        -- Displays diagnostics status in color if set to true.
+        update_in_insert = false, -- Update diagnostics in insert mode.
+        always_visible = true,  -- Show diagnostics even if there are none.
+      }
+      local copilot = function()
+        local buf_clients = vim.lsp.get_active_clients { bufnr = 0 }
+        if #buf_clients == 0 then
+          return "LSP Inactive"
+        end
+
+        local buf_ft = vim.bo.filetype
+        local buf_client_names = {}
+        local copilot_active = false
+
+        -- add client
+        for _, client in pairs(buf_clients) do
+          if client.name ~= "null-ls" and client.name ~= "copilot" then
+            table.insert(buf_client_names, client.name)
+          end
+
+          if client.name == "copilot" then
+            copilot_active = true
+          end
+        end
+
+        if copilot_active then
+          return lvim.icons.git.Octoface
+        end
+        return ""
+      end
+
+      local filetype = function()
+        return vim.bo.filetype
+      end
+
+      require("lualine").setup({
+        options = {
+          theme = {
+            normal = {
+              a = { fg = colors.fg, bg = colors.bg },
+              b = { fg = colors.fg, bg = colors.bg },
+              c = { fg = colors.fg, bg = colors.bg },
+            },
+            insert = { a = { fg = colors.fg, bg = colors.bg }, b = { fg = colors.fg, bg = colors.bg } },
+            visual = { a = { fg = colors.fg, bg = colors.bg }, b = { fg = colors.fg, bg = colors.bg } },
+            command = { a = { fg = colors.fg, bg = colors.bg }, b = { fg = colors.fg, bg = colors.bg } },
+            replace = { a = { fg = colors.fg, bg = colors.bg }, b = { fg = colors.fg, bg = colors.bg } },
+
+            inactive = {
+              a = { bg = colors.fg, fg = colors.bg },
+              b = { bg = colors.fg, fg = colors.bg },
+              c = { bg = colors.fg, fg = colors.bg },
+            },
+          }
+        },
+        sections = {
+          lualine_a = { "branch" },
+          lualine_b = { "filename" },
+          lualine_c = {
+            diagnostics,
+          },
+          lualine_x = { location },
+          lualine_y = { copilot, filetype },
+          lualine_z = { "progress" },
+        },
+      })
+    end
   },
 
   -- gitsigns
@@ -767,53 +869,6 @@ for k, v in pairs(options) do
   vim.opt[k] = v
 end
 
-
-function GitBranch()
-  local ok, _ = os.rename(vim.fn.getcwd() .. '/.git', vim.fn.getcwd() .. '/.git')
-  if not ok then
-    return ''
-  end
-
-  local fp = io.popen('git branch --show-current')
-  local branch = fp:read('*a')
-  if not branch then
-    return ''
-  end
-
-  branch = string.gsub(branch, '\n', '')
-  return [[ ]] .. branch
-end
-
-function LSPStatus()
-  local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-  local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-
-  if errors > 0 then
-    return '  ' .. errors .. ' '
-  elseif warnings > 0 then
-    return '  ' .. warnings .. ' '
-  else
-    return ''
-  end
-end
-
-function StatusLine()
-  local status = ''
-
-  -- left side
-  status = status .. [[ %-{luaeval("GitBranch()")}]]
-  status = status .. [[ %-F]]
-  status = status .. [[ %{luaeval("LSPStatus()")}]]
-  -- right side
-  status = status .. [[ %= %y LN %l/%L]]
-
-  return status
-end
-
-vim.wo.statusline = '%!luaeval("StatusLine()")'
-vim.api.nvim_set_hl(0, "StatusLine", { bg = colors.bg, fg = colors.fg })
-
-
 -- other stuff
 local opts = { noremap = true, silent = true }
 local map = vim.api.nvim_set_keymap
@@ -959,10 +1014,10 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
 -- change the background color of floating windows and borders.
 vim.api.nvim_set_hl(0, "NormalFloat", {
-  bg = "bg",
-  fg = "#d8bd92",
+  bg = "NONE",
+  fg = "NONE",
 })
 vim.api.nvim_set_hl(0, "FloatBorder", {
-  bg = "bg",
-  fg = "#d8bd92",
+  bg = "NONE",
+  fg = "NONE"
 })
