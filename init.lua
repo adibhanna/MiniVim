@@ -42,7 +42,7 @@ require("lazy").setup({
   },
   {
     "projekt0n/github-nvim-theme",
-    lazy = false,    -- make sure we load this during startup if it is your main colorscheme
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       require("github-theme").setup({
@@ -79,6 +79,45 @@ require("lazy").setup({
         filtered_items = {
           hide_dotfiles = false,
           hide_gitignored = false,
+        },
+      },
+      default_component_configs = {
+        icon = {
+          folder_empty = "",
+          folder_empty_open = "",
+        },
+        git_status = {
+          symbols = {
+            renamed  = "󰁕",
+            unstaged = "󰄱",
+          },
+        },
+      },
+      document_symbols = {
+        kinds = {
+          File = { icon = "󰈙", hl = "Tag" },
+          Namespace = { icon = "󰌗", hl = "Include" },
+          Package = { icon = "󰏖", hl = "Label" },
+          Class = { icon = "󰌗", hl = "Include" },
+          Property = { icon = "󰆧", hl = "@property" },
+          Enum = { icon = "󰒻", hl = "@number" },
+          Function = { icon = "󰊕", hl = "Function" },
+          String = { icon = "󰀬", hl = "String" },
+          Number = { icon = "󰎠", hl = "Number" },
+          Array = { icon = "󰅪", hl = "Type" },
+          Object = { icon = "󰅩", hl = "Type" },
+          Key = { icon = "󰌋", hl = "" },
+          Struct = { icon = "󰌗", hl = "Type" },
+          Operator = { icon = "󰆕", hl = "Operator" },
+          TypeParameter = { icon = "󰊄", hl = "Type" },
+          StaticMethod = { icon = '󰠄 ', hl = 'Function' },
+        }
+      },
+      -- Add this section only if you've configured source selector.
+      source_selector = {
+        sources = {
+          { source = "filesystem", display_name = " 󰉓 Files " },
+          { source = "git_status", display_name = " 󰊢 Git " },
         },
       },
     },
@@ -208,6 +247,7 @@ require("lazy").setup({
         local col = vim.fn.virtcol "."
         return string.format("Ln %d,Col %d", line, col)
       end
+
       local diagnostics = {
         "diagnostics",
 
@@ -226,9 +266,9 @@ require("lazy").setup({
           info = "I",
           hint = "H",
         },
-        colored = false,        -- Displays diagnostics status in color if set to true.
+        colored = false, -- Displays diagnostics status in color if set to true.
         update_in_insert = false, -- Update diagnostics in insert mode.
-        always_visible = true,  -- Show diagnostics even if there are none.
+        always_visible = true, -- Show diagnostics even if there are none.
       }
       local copilot = function()
         local buf_clients = vim.lsp.get_active_clients { bufnr = 0 }
@@ -384,9 +424,9 @@ require("lazy").setup({
       { "williamboman/mason-lspconfig.nvim" }, -- Optional
 
       -- Autocompletion
-      { "hrsh7th/nvim-cmp" },     -- Required
+      { "hrsh7th/nvim-cmp" }, -- Required
       { "hrsh7th/cmp-nvim-lsp" }, -- Required
-      { "L3MON4D3/LuaSnip" },     -- Required
+      { "L3MON4D3/LuaSnip" }, -- Required
     },
     config = function()
       local lsp = require("lsp-zero").preset("recommended")
@@ -452,11 +492,11 @@ require("lazy").setup({
 
         sources = {
           -- Copilot Source
-          { name = "copilot",  group_index = 2 },
+          { name = "copilot", group_index = 2 },
           -- Other Sources
           { name = "nvim_lsp", group_index = 2 },
-          { name = "path",     group_index = 2 },
-          { name = "luasnip",  group_index = 2 },
+          { name = "path", group_index = 2 },
+          { name = "luasnip", group_index = 2 },
         },
       })
     end,
@@ -468,10 +508,10 @@ require("lazy").setup({
     cmd = { "TroubleToggle", "Trouble" },
     opts = { use_diagnostic_signs = true },
     keys = {
-      { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>",  desc = "Document Diagnostics (Trouble)" },
+      { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
       { "<leader>xX", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
-      { "<leader>xL", "<cmd>TroubleToggle loclist<cr>",               desc = "Location List (Trouble)" },
-      { "<leader>xQ", "<cmd>TroubleToggle quickfix<cr>",              desc = "Quickfix List (Trouble)" },
+      { "<leader>xL", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xQ", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
       {
         "[q",
         function()
@@ -522,27 +562,27 @@ require("lazy").setup({
       end,
     },
     keys = {
-      { "<leader>st",       "<cmd>Telescope live_grep<cr>",                 desc = "Live Grep" },
-      { "<leader>:",        "<cmd>Telescope command_history<cr>",           desc = "Command History" },
-      { "<leader>fb",       "<cmd>Telescope buffers<cr>",                   desc = "Buffers" },
-      { "<leader><leader>", "<cmd>Telescope buffers<cr>",                   desc = "Buffers" },
-      { "<leader>ff",       "<cmd>Telescope find_files<cr>",                desc = "Find Files" },
-      { "<C-f>",            "<cmd>Telescope find_files<cr>",                desc = "Find Files" },
-      { "<C-p>",            "<cmd>Telescope git_files<cr>",                 desc = "Git Files" },
-      { "<leader>sa",       "<cmd>Telescope autocommands<cr>",              desc = "Auto Commands" },
-      { "<leader>sb",       "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Buffer" },
-      { "<leader>sc",       "<cmd>Telescope command_history<cr>",           desc = "Command History" },
-      { "<leader>sC",       "<cmd>Telescope commands<cr>",                  desc = "Commands" },
-      { "<leader>sd",       "<cmd>Telescope diagnostics bufnr=0<cr>",       desc = "Document diagnostics" },
-      { "<leader>sD",       "<cmd>Telescope diagnostics<cr>",               desc = "Workspace diagnostics" },
-      { "<leader>sh",       "<cmd>Telescope help_tags<cr>",                 desc = "Help Pages" },
-      { "<leader>sH",       "<cmd>Telescope highlights<cr>",                desc = "Search Highlight Groups" },
-      { "<leader>sk",       "<cmd>Telescope keymaps<cr>",                   desc = "Key Maps" },
-      { "<leader>sM",       "<cmd>Telescope man_pages<cr>",                 desc = "Man Pages" },
-      { "<leader>sm",       "<cmd>Telescope marks<cr>",                     desc = "Jump to Mark" },
-      { "<leader>so",       "<cmd>Telescope vim_options<cr>",               desc = "Options" },
-      { "<leader>sR",       "<cmd>Telescope resume<cr>",                    desc = "Resume" },
-      { "<leader>sw",       "<cmd>Telescope grep_string<cr>",               desc = "Grep String" },
+      { "<leader>st", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
+      { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
+      { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+      { "<leader><leader>", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+      { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
+      { "<C-f>", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
+      { "<C-p>", "<cmd>Telescope git_files<cr>", desc = "Git Files" },
+      { "<leader>sa", "<cmd>Telescope autocommands<cr>", desc = "Auto Commands" },
+      { "<leader>sb", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Buffer" },
+      { "<leader>sc", "<cmd>Telescope command_history<cr>", desc = "Command History" },
+      { "<leader>sC", "<cmd>Telescope commands<cr>", desc = "Commands" },
+      { "<leader>sd", "<cmd>Telescope diagnostics bufnr=0<cr>", desc = "Document diagnostics" },
+      { "<leader>sD", "<cmd>Telescope diagnostics<cr>", desc = "Workspace diagnostics" },
+      { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
+      { "<leader>sH", "<cmd>Telescope highlights<cr>", desc = "Search Highlight Groups" },
+      { "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
+      { "<leader>sM", "<cmd>Telescope man_pages<cr>", desc = "Man Pages" },
+      { "<leader>sm", "<cmd>Telescope marks<cr>", desc = "Jump to Mark" },
+      { "<leader>so", "<cmd>Telescope vim_options<cr>", desc = "Options" },
+      { "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
+      { "<leader>sw", "<cmd>Telescope grep_string<cr>", desc = "Grep String" },
     },
     opts = {
       defaults = {
@@ -606,10 +646,10 @@ require("lazy").setup({
       },
       extensions = {
         fzf = {
-          fuzzy = true,                   -- false will only do exact matching
+          fuzzy = true, -- false will only do exact matching
           override_generic_sorter = true, -- override the generic sorter
-          override_file_sorter = true,    -- override the file sorter
-          case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
+          override_file_sorter = true, -- override the file sorter
+          case_mode = "smart_case", -- or "ignore_case" or "respect_case"
         },
         ["ui-select"] = function()
           require("telescope.themes").get_dropdown({
@@ -700,12 +740,12 @@ require("lazy").setup({
               ["ip"] = { query = "@parameter.inner", desc = "inside a parameter" },
             },
             selection_modes = {
-              ["@parameter.outer"] = "v",   -- charwise
-              ["@parameter.inner"] = "v",   -- charwise
-              ["@function.outer"] = "v",    -- charwise
+              ["@parameter.outer"] = "v", -- charwise
+              ["@parameter.inner"] = "v", -- charwise
+              ["@function.outer"] = "v", -- charwise
               ["@conditional.outer"] = "V", -- linewise
-              ["@loop.outer"] = "V",        -- linewise
-              ["@class.outer"] = "<c-v>",   -- blockwise
+              ["@loop.outer"] = "V", -- linewise
+              ["@class.outer"] = "<c-v>", -- blockwise
             },
             include_surrounding_whitespace = false,
           },
@@ -822,47 +862,47 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 local options = {
-  incsearch = true,                        -- make search act like search in modern browsers
-  backup = false,                          -- creates a backup file
-  clipboard = "unnamedplus",               -- allows neovim to access the system clipboard
-  cmdheight = 1,                           -- more space in the neovim command line for displaying messages
+  incsearch = true, -- make search act like search in modern browsers
+  backup = false, -- creates a backup file
+  clipboard = "unnamedplus", -- allows neovim to access the system clipboard
+  cmdheight = 1, -- more space in the neovim command line for displaying messages
   completeopt = { "menuone", "noselect" }, -- mostly just for cmp
-  conceallevel = 0,                        -- so that `` is visible in markdown files
-  fileencoding = "utf-8",                  -- the encoding written to a file
-  hlsearch = true,                         -- highlight all matches on previous search pattern
-  ignorecase = true,                       -- ignore case in search patterns
-  mouse = "a",                             -- allow the mouse to be used in neovim
-  pumheight = 10,                          -- pop up menu height
-  showmode = false,                        -- we don't need to see things like -- INSERT -- anymore
-  showtabline = 0,                         -- always show tabs
-  smartcase = true,                        -- smart case
-  smartindent = true,                      -- make indenting smarter again
-  splitbelow = true,                       -- force all horizontal splits to go below current window
-  splitright = true,                       -- force all vertical splits to go to the right of current window
-  swapfile = false,                        -- creates a swapfile
-  termguicolors = true,                    -- set term gui colors (most terminals support this)
-  timeoutlen = 1000,                       -- time to wait for a mapped sequence to complete (in milliseconds)
-  undofile = true,                         -- enable persistent undo
-  updatetime = 100,                        -- faster completion (4000ms default)
-  writebackup = false,                     -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
-  expandtab = true,                        -- convert tabs to spaces
-  shiftwidth = 2,                          -- the number of spaces inserted for each indentation
-  tabstop = 2,                             -- insert 2 spaces for a tab
-  cursorline = true,                       -- highlight the current line
-  number = true,                           -- set numbered lines
-  breakindent = true,                      -- wrap lines with indent
-  relativenumber = true,                   -- set relative numbered lines
-  numberwidth = 4,                         -- set number column width to 2 {default 4}
-  signcolumn = "yes",                      -- always show the sign column, otherwise it would shift the text each time
-  wrap = false,                            -- display lines as one long line
-  scrolloff = 8,                           -- Makes sure there are always eight lines of context
-  sidescrolloff = 8,                       -- Makes sure there are always eight lines of context
-  laststatus = 3,                          -- Always display the status line
-  showcmd = false,                         -- Don't show the command in the last line
-  ruler = false,                           -- Don't show the ruler
-  guifont = "monospace:h17",               -- the font used in graphical neovim applications
-  title = true,                            -- set the title of window to the value of the titlestring
-  modifiable = true,                       -- allow a buffer to be modified
+  conceallevel = 0, -- so that `` is visible in markdown files
+  fileencoding = "utf-8", -- the encoding written to a file
+  hlsearch = true, -- highlight all matches on previous search pattern
+  ignorecase = true, -- ignore case in search patterns
+  mouse = "a", -- allow the mouse to be used in neovim
+  pumheight = 10, -- pop up menu height
+  showmode = false, -- we don't need to see things like -- INSERT -- anymore
+  showtabline = 0, -- always show tabs
+  smartcase = true, -- smart case
+  smartindent = true, -- make indenting smarter again
+  splitbelow = true, -- force all horizontal splits to go below current window
+  splitright = true, -- force all vertical splits to go to the right of current window
+  swapfile = false, -- creates a swapfile
+  termguicolors = true, -- set term gui colors (most terminals support this)
+  timeoutlen = 1000, -- time to wait for a mapped sequence to complete (in milliseconds)
+  undofile = true, -- enable persistent undo
+  updatetime = 100, -- faster completion (4000ms default)
+  writebackup = false, -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
+  expandtab = true, -- convert tabs to spaces
+  shiftwidth = 2, -- the number of spaces inserted for each indentation
+  tabstop = 2, -- insert 2 spaces for a tab
+  cursorline = true, -- highlight the current line
+  number = true, -- set numbered lines
+  breakindent = true, -- wrap lines with indent
+  relativenumber = true, -- set relative numbered lines
+  numberwidth = 4, -- set number column width to 2 {default 4}
+  signcolumn = "yes", -- always show the sign column, otherwise it would shift the text each time
+  wrap = false, -- display lines as one long line
+  scrolloff = 8, -- Makes sure there are always eight lines of context
+  sidescrolloff = 8, -- Makes sure there are always eight lines of context
+  laststatus = 3, -- Always display the status line
+  showcmd = false, -- Don't show the command in the last line
+  ruler = false, -- Don't show the ruler
+  guifont = "monospace:h17", -- the font used in graphical neovim applications
+  title = true, -- set the title of window to the value of the titlestring
+  modifiable = true, -- allow a buffer to be modified
 }
 
 for k, v in pairs(options) do
