@@ -28,28 +28,9 @@ require("lazy").setup({
       vim.o.background = "dark"
       vim.g.gruvbox_material_background = "hard"
       -- transparent background
-      vim.g.gruvbox_material_transparent_background = 1
+      -- vim.g.gruvbox_material_transparent_background = 1
 
       vim.cmd.colorscheme("gruvbox-material")
-    end,
-  },
-  {
-    "EdenEast/nightfox.nvim",
-    config = function()
-      -- available options: nightfox, dayfox, dawnfox, duskfox, nordfox, terafox, carbonfox
-      -- vim.cmd.colorscheme("duskfox")
-    end,
-  },
-  {
-    "projekt0n/github-nvim-theme",
-    lazy = false,    -- make sure we load this during startup if it is your main colorscheme
-    priority = 1000, -- make sure to load this before all the other start plugins
-    config = function()
-      require("github-theme").setup({
-        -- ...
-      })
-
-      -- vim.cmd('colorscheme github_dark')
     end,
   },
 
@@ -159,27 +140,27 @@ require("lazy").setup({
           },
           duplicate = {
             fg = colors.fg,
-            bg = ""
+            bg = "",
           },
           duplicate_visible = {
             fg = colors.fg,
-            bg = ""
+            bg = "",
           },
           separator = {
             fg = colors.bg,
-            bg = ""
+            bg = "",
           },
           separator_selected = {
             fg = colors.bg,
-            bg = ""
+            bg = "",
           },
           separator_visible = {
             fg = colors.bg,
-            bg = ""
+            bg = "",
           },
           offset_separator = {
             fg = colors.bg,
-            bg = ""
+            bg = "",
           },
 
           -- indicator_visible = {
@@ -197,15 +178,15 @@ require("lazy").setup({
 
   -- lualine
   {
-    'nvim-lualine/lualine.nvim',
+    "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     dependencies = {
-      'nvim-tree/nvim-web-devicons',
+      "nvim-tree/nvim-web-devicons",
     },
     config = function()
       local function location()
-        local line = vim.fn.line "."
-        local col = vim.fn.virtcol "."
+        local line = vim.fn.line(".")
+        local col = vim.fn.virtcol(".")
         return string.format("Ln %d,Col %d", line, col)
       end
       local diagnostics = {
@@ -226,12 +207,12 @@ require("lazy").setup({
           info = "I",
           hint = "H",
         },
-        colored = false,        -- Displays diagnostics status in color if set to true.
+        colored = false,          -- Displays diagnostics status in color if set to true.
         update_in_insert = false, -- Update diagnostics in insert mode.
-        always_visible = true,  -- Show diagnostics even if there are none.
+        always_visible = true,    -- Show diagnostics even if there are none.
       }
       local copilot = function()
-        local buf_clients = vim.lsp.get_active_clients { bufnr = 0 }
+        local buf_clients = vim.lsp.get_active_clients({ bufnr = 0 })
         if #buf_clients == 0 then
           return "LSP Inactive"
         end
@@ -279,7 +260,7 @@ require("lazy").setup({
               b = { bg = colors.fg, fg = colors.bg },
               c = { bg = colors.fg, fg = colors.bg },
             },
-          }
+          },
         },
         sections = {
           lualine_a = { "branch" },
@@ -292,7 +273,7 @@ require("lazy").setup({
           lualine_z = { "progress" },
         },
       })
-    end
+    end,
   },
 
   -- gitsigns
@@ -433,7 +414,23 @@ require("lazy").setup({
         },
       })
 
-      require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
+      -- require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
+
+      require("lspconfig").lua_ls.setup({
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+            workspace = {
+              library = {
+                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                [vim.fn.stdpath("config") .. "/lua"] = true,
+              },
+            },
+          },
+        },
+      })
 
       lsp.setup()
 
@@ -669,6 +666,8 @@ require("lazy").setup({
           "javascript",
           "typescript",
           "yaml",
+          "toml",
+          "json",
           "rust",
           "go",
         },
@@ -922,10 +921,19 @@ map("v", "K", ":m '<-2<CR>gv=gv", opts)
 map("n", "<leader>c", ":bd<cr>", opts)
 
 -- Glance
-vim.keymap.set("n", "gD", "<CMD>Glance definitions<CR>")
-vim.keymap.set("n", "gR", "<CMD>Glance references<CR>")
-vim.keymap.set("n", "gY", "<CMD>Glance type_definitions<CR>")
-vim.keymap.set("n", "gM", "<CMD>Glance implementations<CR>")
+map("n", "gD", "<CMD>Glance definitions<CR>", opts)
+map("n", "gR", "<CMD>Glance references<CR>", opts)
+map("n", "gY", "<CMD>Glance type_definitions<CR>", opts)
+map("n", "gM", "<CMD>Glance implementations<CR>", opts)
+
+-- copy everything between { and } including the brackets
+-- p puts text after the cursor,
+-- P puts text before the cursor.
+map("n", "YY", "va{Vy", opts)
+
+-- Navigate buffers
+map("n", "<S-l>", ":bnext<CR>", opts)
+map("n", "<S-h>", ":bprevious<CR>", opts)
 
 -- autocommands
 -- don't auto comment new line
@@ -1019,5 +1027,5 @@ vim.api.nvim_set_hl(0, "NormalFloat", {
 })
 vim.api.nvim_set_hl(0, "FloatBorder", {
   bg = "NONE",
-  fg = "NONE"
+  fg = "NONE",
 })
