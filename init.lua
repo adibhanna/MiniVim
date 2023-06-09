@@ -944,6 +944,9 @@ map("n", "YY", "va{Vy", opts)
 map("n", "<S-l>", ":bnext<CR>", opts)
 map("n", "<S-h>", ":bprevious<CR>", opts)
 
+-- map enter to ciw
+map("n", "<cr>", "ciw", opts)
+
 -- autocommands
 -- don't auto comment new line
 vim.api.nvim_create_autocmd("BufEnter", { command = [[set formatoptions-=cro]] })
@@ -1038,3 +1041,29 @@ vim.api.nvim_set_hl(0, "FloatBorder", {
   bg = "NONE",
   fg = "NONE",
 })
+
+function AddConsoleLog()
+  local line = vim.api.nvim_win_get_cursor(0)[1]
+  local text = vim.api.nvim_get_current_line()
+
+  -- Determine the variable name
+  local variable = string.match(text, "%s*(%a[%w_]*)%s*=")
+  if not variable then
+    variable = string.match(text, "%s*(%a[%w_]*)%s*$")
+  end
+
+  if variable then
+    -- Construct the console.log statement
+    local logStatement = string.format("console.log('%s: ', %s)", variable, variable)
+
+    -- Insert the console.log statement below the variable
+    vim.api.nvim_buf_set_lines(0, line, line, false, { logStatement })
+
+    -- run the formatter
+    vim.lsp.buf.format()
+  else
+    print("No variable found at the current line.")
+  end
+end
+
+vim.api.nvim_set_keymap('n', '<Leader>cl', ':lua AddConsoleLog()<CR>', { noremap = true, silent = true })
